@@ -61,7 +61,9 @@ def api_run():
     def observe(msg: str, process: str, note: str) -> None:
         s = _request_sig(msg, process)
         observed.append(ObservedSig(msg.encode(), Signature(s["r"], s["s"])))
-        steps.append({"msg": msg, "r": s["r"], "note": note})
+        # Send r as a hex STRING: r is a ~256-bit integer and JavaScript's
+        # Number can't represent it (it would round to a float like 1.4e+76).
+        steps.append({"msg": msg, "r": hex(s["r"]), "note": note})
 
     observe("pay 10 to alice", "primary", "primary process, healthy nonce")
     observe("pay 25 to bob", "primary", "primary process, healthy nonce")
