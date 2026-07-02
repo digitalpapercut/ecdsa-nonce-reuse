@@ -1,0 +1,47 @@
+# --- Secrets / key material (never publish) ---------------------------------
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.p12
+*.pfx
+*.crt
+*.csr
+id_rsa
+id_ed25519
+*.asc
+*.gpg
+*secret*
+*secrets*
+*credential*
+*credentials*
+*token*
+.netrc
+
+# --- Python -----------------------------------------------------------------
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+.venv/
+venv/
+env/
+
+# --- OS / editor noise ------------------------------------------------------
+.DS_Store
+Thumbs.db
+*.swp
+*~
+.vscode/
+.idea/
+
+# --- Local research artifacts (do not publish by accident) ------------------
+scratch/
+private/
+*.pcap
+*.pcapng
+*.log

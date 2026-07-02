@@ -1,0 +1,4 @@
+# Only needed for the optional live HTTP demo (server.py / client_attack.py).
+# The core demo (demo.py) is pure stdlib and needs nothing.
+flask>=3.0
+requests>=2.31

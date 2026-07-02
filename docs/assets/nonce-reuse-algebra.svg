@@ -1,0 +1,82 @@
+<svg viewBox="0 0 920 600" xmlns="http://www.w3.org/2000/svg" font-family="ui-monospace, 'SF Mono', Menlo, Consolas, monospace">
+  <defs>
+    <style>
+      .bg    { fill: #0f1420; }
+      .card  { fill: #161c2c; stroke: #2a3550; stroke-width: 1.5; }
+      .title { fill: #e8edf7; font-weight: 700; }
+      .sub   { fill: #8a97b3; }
+      .eq    { fill: #e8edf7; }
+      .var-s { fill: #7cc4ff; }   /* signatures  */
+      .var-z { fill: #ffd479; }   /* hashes      */
+      .var-k { fill: #7ef0c8; }   /* nonce       */
+      .var-d { fill: #ff9db1; }   /* private key */
+      .var-r { fill: #c9a3ff; }   /* r value     */
+      .op    { fill: #6f7d9c; }
+      .cancel{ stroke: #ff6b81; stroke-width: 2.5; stroke-linecap: round; }
+      .result{ fill: #10281f; stroke: #2f6f52; stroke-width: 1.5; }
+      .result2{ fill: #2a1220; stroke: #7a3049; stroke-width: 1.5; }
+    </style>
+    <marker id="ah" markerWidth="9" markerHeight="9" refX="6" refY="3" orient="auto">
+      <path d="M0,0 L6,3 L0,6 Z" fill="#6f7d9c"/>
+    </marker>
+  </defs>
+
+  <rect class="bg" x="0" y="0" width="920" height="600" rx="14"/>
+
+  <text class="title" x="40" y="52" font-size="24">Recovering the private key with grade-school algebra</text>
+  <text class="sub"   x="40" y="78" font-size="14">One reused nonce k across two messages leaks everything. All arithmetic is mod n (the curve order).</text>
+
+  <!-- Setup: the two signing equations -->
+  <rect class="card" x="40" y="100" width="500" height="150" rx="10"/>
+  <text class="sub" x="60" y="128" font-size="13">Two signatures made with the SAME nonce k (so the same r):</text>
+
+  <text x="80" y="172" font-size="26">
+    <tspan class="var-s">s₁</tspan><tspan class="op">·</tspan><tspan class="var-k">k</tspan><tspan class="op"> = </tspan><tspan class="var-z">z₁</tspan><tspan class="op"> + </tspan><tspan class="var-r">r</tspan><tspan class="op">·</tspan><tspan class="var-d">d</tspan>
+  </text>
+  <text x="80" y="214" font-size="26">
+    <tspan class="var-s">s₂</tspan><tspan class="op">·</tspan><tspan class="var-k">k</tspan><tspan class="op"> = </tspan><tspan class="var-z">z₂</tspan><tspan class="op"> + </tspan><tspan class="var-r">r</tspan><tspan class="op">·</tspan><tspan class="var-d">d</tspan>
+  </text>
+
+  <!-- legend -->
+  <g font-size="12">
+    <text class="var-s" x="580" y="128">s = signature scalar</text>
+    <text class="var-z" x="580" y="150">z = H(message)</text>
+    <text class="var-k" x="580" y="172">k = nonce (secret, reused)</text>
+    <text class="var-r" x="580" y="194">r = x-coord of k·G</text>
+    <text class="var-d" x="580" y="216">d = private key (the prize)</text>
+  </g>
+
+  <!-- Subtraction -->
+  <text class="op" x="52" y="300" font-size="15">Subtract the two equations — the</text>
+  <text class="var-r" x="320" y="300" font-size="15" font-weight="700">r·d</text>
+  <text class="op" x="352" y="300" font-size="15">term is identical, so it cancels:</text>
+
+  <line x1="80" y1="322" x2="470" y2="322" stroke="#4a5a7e" stroke-width="1.5"/>
+
+  <text x="80" y="368" font-size="27">
+    <tspan class="op">(</tspan><tspan class="var-s">s₁</tspan><tspan class="op"> − </tspan><tspan class="var-s">s₂</tspan><tspan class="op">)</tspan><tspan class="op">·</tspan><tspan class="var-k">k</tspan><tspan class="op"> = </tspan><tspan class="var-z">z₁</tspan><tspan class="op"> − </tspan><tspan class="var-z">z₂</tspan>
+  </text>
+  <!-- strike showing r·d cancelled in both equations -->
+  <line class="cancel" x1="268" y1="150" x2="312" y2="176"/>
+  <line class="cancel" x1="268" y1="192" x2="312" y2="218"/>
+
+  <!-- Result 1: recover k -->
+  <rect class="result" x="40" y="410" width="400" height="80" rx="10"/>
+  <text class="var-k" x="60" y="440" font-size="14" font-weight="700">Solve for the nonce k</text>
+  <text x="60" y="475" font-size="24">
+    <tspan class="var-k">k</tspan><tspan class="op"> = </tspan><tspan class="var-z">(z₁ − z₂)</tspan><tspan class="op"> / </tspan><tspan class="var-s">(s₁ − s₂)</tspan>
+  </text>
+
+  <!-- arrow -->
+  <line class="arrow" x1="450" y1="450" x2="500" y2="450" stroke="#6f7d9c" stroke-width="1.5" marker-end="url(#ah)"/>
+
+  <!-- Result 2: recover d -->
+  <rect class="result2" x="510" y="410" width="370" height="80" rx="10"/>
+  <text class="var-d" x="530" y="440" font-size="14" font-weight="700">Back-substitute for the private key d</text>
+  <text x="530" y="475" font-size="24">
+    <tspan class="var-d">d</tspan><tspan class="op"> = </tspan><tspan class="op">(</tspan><tspan class="var-s">s₁</tspan><tspan class="op">·</tspan><tspan class="var-k">k</tspan><tspan class="op"> − </tspan><tspan class="var-z">z₁</tspan><tspan class="op">)</tspan><tspan class="op"> / </tspan><tspan class="var-r">r</tspan>
+  </text>
+
+  <text class="sub" x="40" y="540" font-size="13">The attacker only ever observes public (message, r, s) tuples. No key material is transmitted — d is reconstructed from arithmetic alone.</text>
+  <text class="sub" x="40" y="562" font-size="12" fill="#5f6b85">Same bug class as the 2010 Sony PS3 signing break and the 2013 Android SecureRandom Bitcoin thefts.</text>
+</svg>

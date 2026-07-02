@@ -1,0 +1,77 @@
+<svg viewBox="0 0 940 820" xmlns="http://www.w3.org/2000/svg" font-family="ui-monospace, 'SF Mono', Menlo, Consolas, monospace">
+  <defs>
+    <style>
+      .win   { fill: #0b0f17; stroke: #23293a; stroke-width: 1; }
+      .bar   { fill: #1b2130; }
+      .dot-r { fill: #ff5f56; } .dot-y { fill: #ffbd2e; } .dot-g { fill: #27c93f; }
+      .tt    { fill: #7b8aa8; font-size: 12.5px; }
+      text.l { font-size: 13px; }
+      .fg    { fill: #c8d2e6; }
+      .dim   { fill: #6b7894; }
+      .prompt{ fill: #7ef0c8; }
+      .cmd   { fill: #e8edf7; }
+      .rule  { fill: #4a5a7e; }
+      .head  { fill: #ffd479; font-weight: 700; }
+      .ok    { fill: #7ef0c8; font-weight: 700; }
+      .key   { fill: #ff9db1; }
+      .hi    { fill: #7cc4ff; }
+    </style>
+  </defs>
+
+  <rect class="win" x="10" y="10" width="920" height="800" rx="12"/>
+  <rect class="bar" x="10" y="10" width="920" height="34" rx="12"/>
+  <rect class="bar" x="10" y="28" width="920" height="16"/>
+  <circle class="dot-r" cx="34" cy="27" r="6"/>
+  <circle class="dot-y" cx="54" cy="27" r="6"/>
+  <circle class="dot-g" cx="74" cy="27" r="6"/>
+  <text class="tt" x="470" y="31" text-anchor="middle">ecdsa-nonce-reuse — python3 src/demo.py</text>
+
+  <g transform="translate(28,70)">
+    <text class="l" y="0"><tspan class="prompt">$ </tspan><tspan class="cmd">python3 src/demo.py</tspan></text>
+
+    <!-- Step 1 -->
+    <text class="l rule"  y="34">====================================================================</text>
+    <text class="l head"  y="52">1. A service you do NOT control signs messages for clients</text>
+    <text class="l rule"  y="70">====================================================================</text>
+    <text class="l fg"    y="90"><tspan class="dim">   Server public key Q.x = </tspan>0xb7c3cdec69e06f157a564618...</text>
+    <text class="l dim"   y="108">   (The private key d lives inside the signer and is never sent.)</text>
+
+    <!-- Step 2 -->
+    <text class="l rule"  y="142">====================================================================</text>
+    <text class="l head"  y="160">2. As a passive observer, we collect (message, r, s) tuples</text>
+    <text class="l rule"  y="178">====================================================================</text>
+    <text class="l fg"    y="198"><tspan class="dim">   msg=</tspan>b'transfer 10 to alice'<tspan class="dim">      r=</tspan>0x1fbea9a12ad0adc88a...</text>
+    <text class="l fg"    y="216"><tspan class="dim">   msg=</tspan>b'transfer 25 to bob'<tspan class="dim">        r=</tspan>0x1ab923ae1f9b9deeea...</text>
+    <text class="l dim"   y="234">   -- process forked (twin inherits identical PRNG state) --</text>
+    <text class="l fg"    y="252"><tspan class="dim">   msg=</tspan>b'transfer 5 to carol'<tspan class="dim">       r=</tspan><tspan class="hi">0x468e2e8154bcad98bb...</tspan></text>
+    <text class="l fg"    y="270"><tspan class="dim">   msg=</tspan>b'transfer 999 to dave'<tspan class="dim">      r=</tspan><tspan class="hi">0x468e2e8154bcad98bb...</tspan></text>
+
+    <!-- Step 3 -->
+    <text class="l rule"  y="304">====================================================================</text>
+    <text class="l head"  y="322">3. Detect nonce reuse and recover the private key from math alone</text>
+    <text class="l rule"  y="340">====================================================================</text>
+    <text class="l fg"    y="360">   Two messages share r  -&gt; nonce reuse detected</text>
+    <text class="l dim"   y="378">     b'transfer 5 to carol'</text>
+    <text class="l dim"   y="396">     b'transfer 999 to dave'</text>
+    <text class="l fg"    y="414"><tspan class="dim">   Recovered nonce  k = </tspan>0x8aa3a6248280f7fe95a9cd87...</text>
+    <text class="l fg"    y="432"><tspan class="dim">   Recovered key    d = </tspan><tspan class="key">0xe416f395e764254661766330...</tspan></text>
+
+    <!-- Step 4 -->
+    <text class="l rule"  y="466">====================================================================</text>
+    <text class="l head"  y="484">4. Proof: recovered key == real key</text>
+    <text class="l rule"  y="502">====================================================================</text>
+    <text class="l fg"    y="522"><tspan class="dim">   real d      = </tspan><tspan class="key">0xe416f395e764254661766330...</tspan></text>
+    <text class="l fg"    y="540"><tspan class="dim">   recovered d = </tspan><tspan class="key">0xe416f395e764254661766330...</tspan></text>
+    <text class="l fg"    y="558"><tspan class="dim">   EXACT MATCH: </tspan><tspan class="ok">True</tspan></text>
+    <text class="l fg"    y="576"><tspan class="dim">   recovered d * G == server public key Q : </tspan><tspan class="ok">True</tspan></text>
+
+    <!-- Step 5 -->
+    <text class="l rule"  y="610">====================================================================</text>
+    <text class="l head"  y="628">5. Weaponize (against our own target): forge a NEW authorization</text>
+    <text class="l rule"  y="646">====================================================================</text>
+    <text class="l fg"    y="666"><tspan class="dim">   Forged message : </tspan>b'transfer 1000000 to attacker'</text>
+    <text class="l fg"    y="684"><tspan class="dim">   Server's OWN verifier accepts the forgery: </tspan><tspan class="ok">True</tspan></text>
+    <text class="l dim"   y="710">   The observer never saw the private key. It reconstructed it</text>
+    <text class="l dim"   y="728">   from two public signatures and can now impersonate the server.</text>
+  </g>
+</svg>
