@@ -47,13 +47,29 @@ No dependencies. Python 3.10+. Runs offline in under a second.
 
 ![Terminal output of demo.py: the two forked signatures share an r, the recovered key matches the real one bit-for-bit (EXACT MATCH: True), and a forged authorization is accepted.](docs/assets/demo-terminal.png)
 
-The optional live HTTP demo (`src/server.py`) needs Flask:
+The optional live HTTP demo needs Flask:
 
 ```bash
 python3 -m venv .venv && source .venv/bin/activate
 pip install -r requirements.txt
-python3 src/server.py        # then: python3 src/client_attack.py
+python3 src/server.py        # then, in another terminal: python3 src/client_attack.py
 ```
+
+### Interactive attacker console (forge your own message)
+
+For a hands-on version, run the victim service and the browser-based attacker
+console in two terminals:
+
+```bash
+python3 src/server.py        # victim signing service on :5000
+python3 src/attack_web.py    # attacker console on :5001
+```
+
+Open <http://127.0.0.1:5001>: click once to observe signatures and recover the
+key from the reused nonce, then type **any** message and forge it. The victim's
+own `/verify` endpoint judges your forgery — and accepts a message it never
+signed. The attacker console only ever calls the public endpoints; the private
+key never leaves the victim process.
 
 ## Files
 
@@ -62,6 +78,7 @@ python3 src/server.py        # then: python3 src/client_attack.py
 - `src/vulnerable_signer.py` — two realistic nonce-reuse bug models.
 - `src/demo.py` — end-to-end offline demonstration.
 - `src/server.py` / `src/client_attack.py` — optional localhost HTTP version.
+- `src/attack_web.py` — interactive browser console: recover the key, forge any message.
 - `tests/test_nonce_reuse.py` — self-tests (curve math, recovery, forgery).
 - `docs/writeup.md` — the full research report (background, threat model, results, defenses).
 

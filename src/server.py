@@ -17,6 +17,7 @@ from __future__ import annotations
 
 from flask import Flask, request, jsonify
 
+from ecdsa_min import Signature, verify
 from vulnerable_signer import VulnerableSigner
 
 app = Flask(__name__)
@@ -41,6 +42,22 @@ def sign_endpoint():
     sig = signer.sign_message(msg)
     # Note what is (and is not) returned: no key, no nonce. Only r, s.
     return jsonify({"message": data["message"], "r": sig.r, "s": sig.s})
+
+
+@app.post("/verify")
+def verify_endpoint():
+    """Check a client-supplied signature against the server's OWN public key.
+
+    Verification needs only the public key, so exposing this leaks nothing. It
+    lets an attacker's forged (message, r, s) be judged by the very service it
+    is impersonating: if this returns accepted=true on a message the server
+    never signed, the attacker is indistinguishable from the real signer.
+    """
+    data = request.get_json(force=True)
+    msg = data["message"].encode()
+    sig = Signature(int(data["r"]), int(data["s"]))
+    accepted = verify(primary.public_key(), msg, sig)
+    return jsonify({"message": data["message"], "accepted": bool(accepted)})
 
 
 @app.post("/fork")
